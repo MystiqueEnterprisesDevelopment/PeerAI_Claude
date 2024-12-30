@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery Number Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f2f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .numbers-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .number-ball {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: bounce 0.5s ease;
+        }
+        
+        .main-number {
+            background: #2196F3;
+        }
+        
+        .special-number {
+            background: #f44336;
+        }
+        
+        @keyframes bounce {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lottery Number Generator</h1>
+        <select id="gameType">
+            <option value="powerball">Powerball</option>
+            <option value="megamillions">Mega Millions</option>
+            <option value="basic">Basic Lottery (6/49)</option>
+        </select>
+        <button onclick="generateNumbers()">Generate Numbers</button>
+        <div id="numbers" class="numbers-container"></div>
+    </div>
+
+    <script>
+        const games = {
+            powerball: { main: { count: 5, max: 69 }, special: { count: 1, max: 26 }, name: 'Powerball' },
+            megamillions: { main: { count: 5, max: 70 }, special: { count: 1, max: 25 }, name: 'Mega Millions' },
+            basic: { main: { count: 6, max: 49 }, special: { count: 0, max: 0 }, name: 'Basic Lottery' }
+        };
+
+        function generateRandomNumber(max) {
+            return Math.floor(Math.random() * max) + 1;
+        }
+
+        function generateUniqueNumbers(count, max) {
+            const numbers = new Set();
+            while (numbers.size < count) {
+                numbers.add(generateRandomNumber(max));
+            }
+            return Array.from(numbers).sort((a, b) => a - b);
+        }
+
+        function createBall(number, isSpecial) {
+            const ball = document.createElement('div');
+            ball.className = `number-ball ${isSpecial ? 'special-number' : 'main-number'}`;
+            ball.textContent = number;
+            return ball;
+        }
+
+        function generateNumbers() {
+            const numbersContainer = document.getElementById('numbers');
+            numbersContainer.innerHTML = '';
+            
+            const gameType = document.getElementById('gameType').value;
+            const game = games[gameType];
+            
+            const mainNumbers = generateUniqueNumbers(game.main.count, game.main.max);
+            mainNumbers.forEach(number => {
+                numbersContainer.appendChild(createBall(number, false));
+            });
+            
+            if (game.special.count > 0) {
+                const specialNumbers = generateUniqueNumbers(game.special.count, game.special.max);
+                specialNumbers.forEach(number => {
+                    numbersContainer.appendChild(createBall(number, true));
+                });
+            }
+        }
+    </script>
+</body>
+</html>
